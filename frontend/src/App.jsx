@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import DashboardView from './pages/DashboardView';
-import DisruptionPredictorView from './pages/DisruptionPredictorView';
-import SupplyRiskView from './pages/SupplyRiskView';
-import PriceForecastView from './pages/PriceForecastView';
-import SupplyShockView from './pages/SupplyShockView';
-import MineralProfileView from './pages/MineralProfileView';
-import CountryProfileView from './pages/CountryProfileView';
-import ModelCardsView from './pages/ModelCardsView';
+import Navbar from './components/Navbar';
+import DisclosureNotice from './components/DisclosureNotice';
+import Home from './pages/Home';
+import Disruption from './pages/Disruption';
+import Risk from './pages/Risk';
+import Price from './pages/Price';
+import Shocks from './pages/Shocks';
+import MineralDetail from './pages/MineralDetail';
+import CountryDetail from './pages/CountryDetail';
+import Analytics from './pages/Analytics';
 import { api } from './services/api';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('home');
+  const [selectedMineral, setSelectedMineral] = useState('Lithium');
+  const [selectedCountry, setSelectedCountry] = useState('China');
   const [health, setHealth] = useState(null);
 
   useEffect(() => {
@@ -27,38 +29,48 @@ export default function App() {
     checkHealth();
   }, []);
 
+  const navigateTo = (tab, param = null) => {
+    if (tab === 'mineral' && param) setSelectedMineral(param);
+    if (tab === 'country' && param) setSelectedCountry(param);
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const renderActiveView = () => {
     switch (activeTab) {
-      case 'dashboard':
-        return <DashboardView onNavigate={(tab) => setActiveTab(tab)} />;
+      case 'home':
+        return <Home onNavigate={navigateTo} />;
       case 'disruption':
-        return <DisruptionPredictorView />;
+        return <Disruption onNavigate={navigateTo} />;
       case 'risk':
-        return <SupplyRiskView />;
+        return <Risk onNavigate={navigateTo} />;
       case 'price':
-        return <PriceForecastView />;
-      case 'shock':
-        return <SupplyShockView />;
-      case 'mineral_profile':
-        return <MineralProfileView />;
-      case 'country_profile':
-        return <CountryProfileView />;
-      case 'model_cards':
-        return <ModelCardsView />;
+        return <Price onNavigate={navigateTo} />;
+      case 'shocks':
+        return <Shocks onNavigate={navigateTo} />;
+      case 'mineral':
+        return <MineralDetail onNavigate={navigateTo} mineralName={selectedMineral} />;
+      case 'country':
+        return <CountryDetail onNavigate={navigateTo} countryName={selectedCountry} />;
+      case 'analytics':
+        return <Analytics onNavigate={navigateTo} />;
       default:
-        return <DashboardView onNavigate={(tab) => setActiveTab(tab)} />;
+        return <Home onNavigate={navigateTo} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#090D14] text-slate-100 flex flex-col font-sans">
-      <Header health={health} activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="flex flex-1">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main className="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full">
-          {renderActiveView()}
-        </main>
-      </div>
+    <div className="min-h-screen bg-[#EDECE7] text-[#111111] flex flex-col font-sans selection:bg-[#FF2AA1] selection:text-white">
+      {/* Editorial Top Navbar */}
+      <Navbar health={health} onNavigate={navigateTo} />
+
+      {/* Main Page Body */}
+      <main className="flex-1 w-full pb-12">
+        {renderActiveView()}
+      </main>
+
+      {/* Mandatory Disclosure Notice Footer */}
+      <DisclosureNotice />
     </div>
   );
 }

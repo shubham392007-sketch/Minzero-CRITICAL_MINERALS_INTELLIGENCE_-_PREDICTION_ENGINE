@@ -2,107 +2,125 @@
 
 @layer base {
   :root {
-    --bg-dark: #090D14;
-    --card-bg: #111723;
-    --card-border: #1E293B;
-    --accent-cyan: #38BDF8;
-    --accent-emerald: #10B981;
-    --accent-amber: #F59E0B;
-    --accent-rose: #F43F5E;
-    --accent-purple: #A855F7;
+    --bg-canvas: #EDECE7;
+    --ink-black: #111111;
+    --card-white: #FFFFFF;
+    --card-blue: #4FC3F7;
+    --card-chartreuse: #E4FF5B;
+    --card-mint: #7CFFA6;
+    --card-cream: #F5F3E3;
+    --accent-magenta: #FF2AA1;
   }
 
   body {
-    background-color: var(--bg-dark);
-    color: #F8FAFC;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--ink-black);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
   }
 }
 
-/* Custom Scrollbars */
+/* Typography Utility Classes */
+.font-display {
+  font-family: 'Anton', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.font-sans {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Card Physical Depth & Rotations */
+.physical-card {
+  border-radius: 28px;
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.physical-card:hover {
+  transform: translateY(-8px) scale(1.005) !important;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 4px 12px -3px rgba(0, 0, 0, 0.06);
+}
+
+.physical-card-dashed-hover:hover {
+  outline: 2.5px dashed #111111;
+  outline-offset: 4px;
+}
+
+/* Rotations for Stacked Deck */
+.rotate-card-1 {
+  transform: rotate(-1.0deg);
+}
+
+.rotate-card-2 {
+  transform: rotate(0.8deg);
+}
+
+.rotate-card-3 {
+  transform: rotate(-0.6deg);
+}
+
+.rotate-card-4 {
+  transform: rotate(1.2deg);
+}
+
+.rotate-card-5 {
+  transform: rotate(-0.4deg);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0D121D;
+  background: #EDECE7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A364F;
+  background: #C4C2B8;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #38BDF8;
+  background: #111111;
 }
 
-/* Custom UI Components */
-.panel-card {
-  background: #111723;
-  border: 1px solid #1E2D42;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+/* Badges for Editorial Risk Encoding */
+.badge-editorial-low {
+  background: #F5F3E3;
+  color: #111111;
+  border: 1px solid #111111;
 }
 
-.panel-card:hover {
-  border-color: #334155;
+.badge-editorial-moderate {
+  background: #E4FF5B;
+  color: #111111;
+  border: 1px solid #111111;
 }
 
-.glow-border-cyan {
-  border-color: rgba(56, 189, 248, 0.4);
-  box-shadow: 0 0 15px -3px rgba(56, 189, 248, 0.15);
+.badge-editorial-elevated {
+  background: #4FC3F7;
+  color: #111111;
+  border: 1px solid #111111;
 }
 
-.glow-border-rose {
-  border-color: rgba(244, 63, 94, 0.4);
-  box-shadow: 0 0 15px -3px rgba(244, 63, 94, 0.15);
+.badge-editorial-high {
+  background: #FFFFFF;
+  color: #111111;
+  border: 2px solid #FF5722;
 }
 
-.stat-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-/* Risk Badges */
-.badge-low {
-  background: rgba(16, 185, 129, 0.12);
-  color: #34D399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.badge-moderate {
-  background: rgba(245, 158, 11, 0.12);
-  color: #FBBF24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.badge-elevated {
-  background: rgba(249, 115, 22, 0.12);
-  color: #FB923C;
-  border: 1px solid rgba(249, 115, 22, 0.3);
-}
-
-.badge-high {
-  background: rgba(239, 68, 68, 0.15);
-  color: #F87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-}
-
-.badge-critical {
-  background: rgba(225, 29, 72, 0.25);
-  color: #FDA4AF;
-  border: 1px solid rgba(225, 29, 72, 0.6);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.badge-editorial-critical {
+  background: #111111;
+  color: #FFFFFF;
+  border: 1px solid #111111;
 }
