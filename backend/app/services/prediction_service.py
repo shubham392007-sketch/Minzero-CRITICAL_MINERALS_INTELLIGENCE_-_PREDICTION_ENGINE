@@ -11,6 +11,7 @@ from backend.app.schemas.schemas import (
     PredictionInputPayload, DisruptionPredictResponse, RiskPredictResponse,
     PricePredictResponse, ShockDetectResponse, DriverFactor
 )
+from backend.app.preprocessing.data_loader import load_all_data
 from backend.app.preprocessing.feature_engineering import FeatureEngineer
 from backend.app.services.insight_service import InsightService
 from backend.app.services.explanation_service import ExplanationService
@@ -25,6 +26,12 @@ class PredictionService:
     def __init__(self, models_base_dir: Path = MODELS_DIR):
         self.base_dir = models_base_dir
         self.feature_engineer = FeatureEngineer()
+
+        try:
+            self.master_df, _, _ = load_all_data()
+        except Exception as e:
+            logger.warning(f"Could not load master dataset for baseline lookup: {e}")
+            self.master_df = None
 
         self.models = {}
         self.scalers = {}
@@ -54,6 +61,21 @@ class PredictionService:
     def _prepare_features(self, payload: PredictionInputPayload, group: str) -> Tuple[pd.DataFrame, np.ndarray, List[str]]:
         """Convert payload to engineered DataFrame matching training features."""
         data_dict = payload.model_dump()
+
+        # Populate baseline dataset values if available and not explicitly overridden
+        if self.master_df is not None and not self.master_df.empty:
+            match = self.master_df[
+                (self.master_df["mineral"].str.lower() == payload.mineral.lower()) &
+                (self.master_df["country"].str.lower() == payload.country.lower())
+            ]
+            if not match.empty:
+                year_match = match[match["year"] == payload.year]
+                base_row = year_match.iloc[0] if not year_match.empty else match.iloc[-1]
+                fields_set = payload.model_fields_set
+                for col, val in base_row.items():
+                    if col in data_dict and col not in fields_set:
+                        data_dict[col] = val
+
         df_single = pd.DataFrame([data_dict])
 
         # Engineer features
@@ -108,7 +130,7 @@ class PredictionService:
         drivers = [DriverFactor(**f) for f in factors_raw]
 
         insight = InsightService.generate_disruption_insight(
-            prob, risk_level, payload.export_control_active, payload.hhi, factors_raw
+            prob, risk_level, payload.export_control_active or 0, payload.hhi or 0.5, factors_raw
         )
 
         return DisruptionPredictResponse(
@@ -150,8 +172,8 @@ class PredictionService:
         drivers = [DriverFactor(**f) for f in factors_raw]
 
         insight = InsightService.generate_risk_insight(
-            score_clipped, category, payload.export_control_active,
-            payload.refined_share_pct, payload.years_of_reserves
+            score_clipped, category, payload.export_control_active or 0,
+            payload.refined_share_pct or 50.0, payload.years_of_reserves or 20.0
         )
 
         return RiskPredictResponse(
@@ -172,7 +194,7 @@ class PredictionService:
 
         X_raw, X_scaled, feature_cols = self._prepare_features(payload, "price")
         pred_price = float(model.predict(X_scaled)[0])
-        curr_price = float(payload.price_usd_per_tonne)
+        curr_price = float(payload.price_usd_per_tonne or 15000.0)
 
         chg_pct = ((pred_price - curr_price) / curr_price) * 100.0 if curr_price > 0 else 0.0
 
@@ -184,7 +206,7 @@ class PredictionService:
             direction = "Stable"
 
         insight = InsightService.generate_price_insight(
-            curr_price, pred_price, chg_pct, payload.demand_growth_pct
+            curr_price, pred_price, chg_pct, payload.demand_growth_pct or 10.0
         )
 
         return PricePredictResponse(
@@ -220,12 +242,16 @@ class PredictionService:
 
         # Shock Type & Drivers
         drivers = []
-        if abs(payload.price_usd_per_tonne) > 0:
-            drivers.append(f"Price: ${payload.price_usd_per_tonne:,.0f}/t")
-        if payload.export_control_active == 1:
+        p_price = payload.price_usd_per_tonne or 15000.0
+        p_hhi = payload.hhi or 0.5
+        p_ec = payload.export_control_active or 0
+
+        if abs(p_price) > 0:
+            drivers.append(f"Price: ${p_price:,.0f}/t")
+        if p_ec == 1:
             drivers.append("Active Export Restrictions")
-        if payload.hhi >= 0.4:
-            drivers.append(f"High HHI Concentration ({payload.hhi:.2f})")
+        if p_hhi >= 0.4:
+            drivers.append(f"High HHI Concentration ({p_hhi:.2f})")
 
         from backend.training.train_shock import classify_shock_type
         row_series = pd.Series(payload.model_dump())
