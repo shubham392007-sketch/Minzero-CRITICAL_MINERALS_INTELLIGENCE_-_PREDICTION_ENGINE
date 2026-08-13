@@ -1,0 +1,499 @@
+{
+  "model_name": "XGBoost Classifier (Optuna Tuned)",
+  "problem_type": "Binary Classification",
+  "target": "disruption_next_year",
+  "features": [
+    "is_rare_earth",
+    "mine_production_tonnes",
+    "production_share_pct",
+    "reserves_tonnes",
+    "years_of_reserves",
+    "refined_share_pct",
+    "price_usd_per_tonne",
+    "demand_growth_pct",
+    "export_control_active",
+    "hhi",
+    "top_country_share_pct",
+    "reserve_adequacy",
+    "refining_dependency",
+    "export_control_exposure",
+    "country_dominance",
+    "production_concentration",
+    "supply_dependency",
+    "year_over_year_production_change",
+    "production_growth_pct",
+    "year_over_year_price_change",
+    "price_change_pct",
+    "demand_pressure",
+    "price_lag_1",
+    "price_lag_2",
+    "production_lag_1",
+    "production_lag_2",
+    "production_share_lag_1",
+    "demand_growth_lag_1",
+    "hhi_lag_1",
+    "top_country_share_lag_1",
+    "export_control_lag_1",
+    "price_growth_lag_1",
+    "price_rolling_mean",
+    "price_rolling_std",
+    "price_volatility",
+    "production_rolling_mean",
+    "production_rolling_std"
+  ],
+  "n_features": 37,
+  "train_period": "2015-2024",
+  "test_period": "2025",
+  "metrics": {
+    "pr_auc": 0.0355,
+    "roc_auc": 0.6791,
+    "precision": 0.0482,
+    "recall": 0.8,
+    "f1_score": 0.0909,
+    "balanced_accuracy": 0.7439,
+    "confusion_matrix": [
+      [
+        174,
+        79
+      ],
+      [
+        1,
+        4
+      ]
+    ]
+  },
+  "model_comparison": [
+    {
+      "model": "Logistic Regression",
+      "val_pr_auc": 0.0657,
+      "val_roc_auc": 0.7131,
+      "test_pr_auc": 0.0836,
+      "test_roc_auc": 0.7281,
+      "test_precision": 0.0351,
+      "test_recall": 0.8,
+      "test_f1": 0.0672,
+      "test_balanced_accuracy": 0.6826
+    },
+    {
+      "model": "Random Forest",
+      "val_pr_auc": 0.5735,
+      "val_roc_auc": 0.7925,
+      "test_pr_auc": 0.0351,
+      "test_roc_auc": 0.6866,
+      "test_precision": 0.0494,
+      "test_recall": 0.8,
+      "test_f1": 0.093,
+      "test_balanced_accuracy": 0.7478
+    },
+    {
+      "model": "XGBoost",
+      "val_pr_auc": 0.5659,
+      "val_roc_auc": 0.7778,
+      "test_pr_auc": 0.0424,
+      "test_roc_auc": 0.7439,
+      "test_precision": 0.0482,
+      "test_recall": 0.8,
+      "test_f1": 0.0909,
+      "test_balanced_accuracy": 0.7439
+    },
+    {
+      "model": "LightGBM",
+      "val_pr_auc": 0.5934,
+      "val_roc_auc": 0.7863,
+      "test_pr_auc": 0.0532,
+      "test_roc_auc": 0.7336,
+      "test_precision": 0.0482,
+      "test_recall": 0.8,
+      "test_f1": 0.0909,
+      "test_balanced_accuracy": 0.7439
+    },
+    {
+      "model": "CatBoost",
+      "val_pr_auc": 0.592,
+      "val_roc_auc": 0.8363,
+      "test_pr_auc": 0.0413,
+      "test_roc_auc": 0.698,
+      "test_precision": 0.0482,
+      "test_recall": 0.8,
+      "test_f1": 0.0909,
+      "test_balanced_accuracy": 0.7439
+    }
+  ],
+  "feature_importances": [
+    {
+      "feature": "price_growth_lag_1",
+      "importance": 0.2862
+    },
+    {
+      "feature": "top_country_share_lag_1",
+      "importance": 0.0737
+    },
+    {
+      "feature": "production_rolling_std",
+      "importance": 0.0558
+    },
+    {
+      "feature": "price_volatility",
+      "importance": 0.0403
+    },
+    {
+      "feature": "production_share_pct",
+      "importance": 0.037
+    },
+    {
+      "feature": "price_rolling_std",
+      "importance": 0.0358
+    },
+    {
+      "feature": "supply_dependency",
+      "importance": 0.0356
+    },
+    {
+      "feature": "year_over_year_price_change",
+      "importance": 0.0328
+    },
+    {
+      "feature": "hhi_lag_1",
+      "importance": 0.032
+    },
+    {
+      "feature": "production_concentration",
+      "importance": 0.0285
+    },
+    {
+      "feature": "reserves_tonnes",
+      "importance": 0.0278
+    },
+    {
+      "feature": "demand_growth_pct",
+      "importance": 0.0257
+    },
+    {
+      "feature": "top_country_share_pct",
+      "importance": 0.0257
+    },
+    {
+      "feature": "price_rolling_mean",
+      "importance": 0.0233
+    },
+    {
+      "feature": "refining_dependency",
+      "importance": 0.0217
+    }
+  ],
+  "shap_importances": [
+    {
+      "feature": "price_growth_lag_1",
+      "shap_value": 4.738
+    },
+    {
+      "feature": "refined_share_pct",
+      "shap_value": 0.5219
+    },
+    {
+      "feature": "price_change_pct",
+      "shap_value": 0.5158
+    },
+    {
+      "feature": "price_volatility",
+      "shap_value": 0.4775
+    },
+    {
+      "feature": "demand_growth_pct",
+      "shap_value": 0.3715
+    },
+    {
+      "feature": "years_of_reserves",
+      "shap_value": 0.2433
+    },
+    {
+      "feature": "price_lag_1",
+      "shap_value": 0.2096
+    },
+    {
+      "feature": "production_share_lag_1",
+      "shap_value": 0.2087
+    },
+    {
+      "feature": "demand_pressure",
+      "shap_value": 0.2041
+    },
+    {
+      "feature": "production_growth_pct",
+      "shap_value": 0.1366
+    },
+    {
+      "feature": "price_rolling_std",
+      "shap_value": 0.1237
+    },
+    {
+      "feature": "year_over_year_price_change",
+      "shap_value": 0.1149
+    },
+    {
+      "feature": "production_rolling_std",
+      "shap_value": 0.0813
+    },
+    {
+      "feature": "reserve_adequacy",
+      "shap_value": 0.078
+    },
+    {
+      "feature": "price_usd_per_tonne",
+      "shap_value": 0.0647
+    }
+  ],
+  "pr_curve": [
+    {
+      "precision": 0.0194,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.02,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0207,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0215,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0223,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0231,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0242,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0253,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0265,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0276,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0292,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0307,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0323,
+      "recall": 1.0
+    },
+    {
+      "precision": 0.0272,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0288,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0305,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0325,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0348,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0374,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0404,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.044,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0482,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0533,
+      "recall": 0.8
+    },
+    {
+      "precision": 0.0299,
+      "recall": 0.4
+    },
+    {
+      "precision": 0.0169,
+      "recall": 0.2
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    },
+    {
+      "precision": 0.0,
+      "recall": 0.0
+    }
+  ],
+  "roc_curve": [
+    {
+      "fpr": 0.0,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.004,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0119,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0277,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0356,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0593,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0672,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.0791,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.2253,
+      "tpr": 0.0
+    },
+    {
+      "fpr": 0.2253,
+      "tpr": 0.2
+    },
+    {
+      "fpr": 0.253,
+      "tpr": 0.2
+    },
+    {
+      "fpr": 0.253,
+      "tpr": 0.4
+    },
+    {
+      "fpr": 0.2648,
+      "tpr": 0.4
+    },
+    {
+      "fpr": 0.2648,
+      "tpr": 0.6
+    },
+    {
+      "fpr": 0.2727,
+      "tpr": 0.6
+    },
+    {
+      "fpr": 0.2727,
+      "tpr": 0.8
+    },
+    {
+      "fpr": 0.5889,
+      "tpr": 0.8
+    },
+    {
+      "fpr": 0.5889,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.6561,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.668,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.7549,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.7628,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.7668,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.7747,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.8261,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.834,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.8933,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.9012,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.9249,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 0.9328,
+      "tpr": 1.0
+    },
+    {
+      "fpr": 1.0,
+      "tpr": 1.0
+    }
+  ],
+  "synthetic_data_warning": "Predictions demonstrate ML methodology on a synthetic dataset and should not be used as real-world geopolitical forecasts."
+}

@@ -1,0 +1,54 @@
+{
+  "model_name": "Isolation Forest Anomaly Detector",
+  "problem_type": "Unsupervised Anomaly Detection",
+  "features": [
+    "price_change_pct",
+    "production_growth_pct",
+    "demand_growth_pct",
+    "production_share_pct",
+    "refined_share_pct",
+    "hhi",
+    "top_country_share_pct",
+    "export_control_active",
+    "years_of_reserves",
+    "price_volatility",
+    "export_control_exposure"
+  ],
+  "n_features": 11,
+  "contamination": 0.07,
+  "total_observations": 1548,
+  "anomalies_detected": 109,
+  "anomaly_rate_pct": 7.04,
+  "model_comparison": [
+    {
+      "model": "Isolation Forest",
+      "anomaly_count": 109,
+      "anomaly_rate": 7.04
+    },
+    {
+      "model": "Local Outlier Factor",
+      "anomaly_count": 94,
+      "anomaly_rate": 6.07
+    },
+    {
+      "model": "One-Class SVM",
+      "anomaly_count": 110,
+      "anomaly_rate": 7.11
+    }
+  ],
+  "severity_bands": [
+    "Normal",
+    "Watch",
+    "Warning",
+    "Critical"
+  ],
+  "shock_types": [
+    "Price Shock",
+    "Production Shock",
+    "Demand Shock",
+    "Concentration Shock",
+    "Geopolitical Shock",
+    "Composite Supply Shock"
+  ],
+  "synthetic_data_warning": "Detected anomalies represent mathematical outliers in a synthetic dataset, not real-world historical supply chain events."
+}

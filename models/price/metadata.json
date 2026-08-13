@@ -1,0 +1,226 @@
+{
+  "model_name": "XGBoost Regressor (Optuna Tuned)",
+  "problem_type": "One-Step-Ahead Price Forecasting",
+  "target": "price_next_year",
+  "features": [
+    "is_rare_earth",
+    "mine_production_tonnes",
+    "production_share_pct",
+    "reserves_tonnes",
+    "years_of_reserves",
+    "refined_share_pct",
+    "price_usd_per_tonne",
+    "demand_growth_pct",
+    "export_control_active",
+    "hhi",
+    "top_country_share_pct",
+    "supply_risk_score",
+    "high_supply_risk",
+    "reserve_adequacy",
+    "refining_dependency",
+    "export_control_exposure",
+    "country_dominance",
+    "production_concentration",
+    "supply_dependency",
+    "year_over_year_production_change",
+    "production_growth_pct",
+    "year_over_year_price_change",
+    "price_change_pct",
+    "demand_pressure",
+    "price_lag_1",
+    "price_lag_2",
+    "production_lag_1",
+    "production_lag_2",
+    "production_share_lag_1",
+    "demand_growth_lag_1",
+    "hhi_lag_1",
+    "top_country_share_lag_1",
+    "export_control_lag_1",
+    "price_growth_lag_1",
+    "price_rolling_mean",
+    "price_rolling_std",
+    "price_volatility",
+    "production_rolling_mean",
+    "production_rolling_std"
+  ],
+  "n_features": 39,
+  "train_period": "2015-2024",
+  "test_period": "2025",
+  "metrics": {
+    "mae": 263358.88,
+    "rmse": 916022.75,
+    "mape_pct": 30.01,
+    "r2_score": 0.9918
+  },
+  "model_comparison": [
+    {
+      "model": "Linear Regression",
+      "val_mae": 255849.02,
+      "val_rmse": 773316.59,
+      "val_mape": 658.82,
+      "val_r2": 0.9936,
+      "test_mae": 102862.7,
+      "test_rmse": 145772.21,
+      "test_mape": 813.25,
+      "test_r2": 0.9998
+    },
+    {
+      "model": "Random Forest Regressor",
+      "val_mae": 347190.14,
+      "val_rmse": 1482952.02,
+      "val_mape": 22.56,
+      "val_r2": 0.9766,
+      "test_mae": 384724.04,
+      "test_rmse": 1308463.37,
+      "test_mape": 13.86,
+      "test_r2": 0.9832
+    },
+    {
+      "model": "XGBoost Regressor",
+      "val_mae": 383495.58,
+      "val_rmse": 1664502.97,
+      "val_mape": 71.92,
+      "val_r2": 0.9706,
+      "test_mae": 495593.25,
+      "test_rmse": 1749066.57,
+      "test_mape": 33.41,
+      "test_r2": 0.97
+    },
+    {
+      "model": "LightGBM Regressor",
+      "val_mae": 351347.34,
+      "val_rmse": 1439251.67,
+      "val_mape": 38.5,
+      "val_r2": 0.978,
+      "test_mae": 350397.79,
+      "test_rmse": 1206205.24,
+      "test_mape": 51.35,
+      "test_r2": 0.9858
+    }
+  ],
+  "feature_importances": [
+    {
+      "feature": "price_usd_per_tonne",
+      "importance": 0.5229
+    },
+    {
+      "feature": "price_lag_1",
+      "importance": 0.4627
+    },
+    {
+      "feature": "price_rolling_mean",
+      "importance": 0.0062
+    },
+    {
+      "feature": "supply_dependency",
+      "importance": 0.0017
+    },
+    {
+      "feature": "top_country_share_pct",
+      "importance": 0.0016
+    },
+    {
+      "feature": "hhi",
+      "importance": 0.0015
+    },
+    {
+      "feature": "production_concentration",
+      "importance": 0.0014
+    },
+    {
+      "feature": "price_lag_2",
+      "importance": 0.0007
+    },
+    {
+      "feature": "supply_risk_score",
+      "importance": 0.0005
+    },
+    {
+      "feature": "price_rolling_std",
+      "importance": 0.0004
+    },
+    {
+      "feature": "price_growth_lag_1",
+      "importance": 0.0003
+    },
+    {
+      "feature": "year_over_year_price_change",
+      "importance": 0.0001
+    },
+    {
+      "feature": "price_volatility",
+      "importance": 0.0001
+    },
+    {
+      "feature": "is_rare_earth",
+      "importance": 0.0
+    },
+    {
+      "feature": "mine_production_tonnes",
+      "importance": 0.0
+    }
+  ],
+  "shap_importances": [
+    {
+      "feature": "price_usd_per_tonne",
+      "shap_value": 3602239.25
+    },
+    {
+      "feature": "price_lag_1",
+      "shap_value": 1065377.375
+    },
+    {
+      "feature": "price_rolling_mean",
+      "shap_value": 114221.7812
+    },
+    {
+      "feature": "top_country_share_pct",
+      "shap_value": 66738.25
+    },
+    {
+      "feature": "price_lag_2",
+      "shap_value": 48807.8945
+    },
+    {
+      "feature": "hhi",
+      "shap_value": 27848.957
+    },
+    {
+      "feature": "price_growth_lag_1",
+      "shap_value": 16538.6992
+    },
+    {
+      "feature": "production_concentration",
+      "shap_value": 14969.6152
+    },
+    {
+      "feature": "year_over_year_price_change",
+      "shap_value": 13374.8311
+    },
+    {
+      "feature": "supply_dependency",
+      "shap_value": 13333.7734
+    },
+    {
+      "feature": "supply_risk_score",
+      "shap_value": 9612.8467
+    },
+    {
+      "feature": "price_rolling_std",
+      "shap_value": 8158.2559
+    },
+    {
+      "feature": "price_volatility",
+      "shap_value": 4094.6663
+    },
+    {
+      "feature": "price_change_pct",
+      "shap_value": 3960.5215
+    },
+    {
+      "feature": "top_country_share_lag_1",
+      "shap_value": 3522.4333
+    }
+  ],
+  "synthetic_data_warning": "Predictions demonstrate ML methodology on a synthetic dataset and should not be used as real-world commodity price forecasts."
+}
