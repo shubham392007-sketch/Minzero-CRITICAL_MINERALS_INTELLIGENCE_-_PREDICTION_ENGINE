@@ -7,19 +7,19 @@ class HealthResponse(BaseModel):
     models_loaded: Dict[str, bool]
 
 class PredictionInputPayload(BaseModel):
-    country: str = Field(..., example="China")
-    mineral: str = Field(..., example="Lithium")
+    country: str = Field("China", example="China")
+    mineral: str = Field("Lithium", example="Lithium")
     year: int = Field(2025, example=2025)
-    mine_production_tonnes: float = Field(..., example=50000.0)
-    production_share_pct: float = Field(..., example=40.0)
-    reserves_tonnes: float = Field(..., example=1000000.0)
-    years_of_reserves: float = Field(..., example=20.0)
-    refined_share_pct: float = Field(..., example=65.0)
-    price_usd_per_tonne: float = Field(..., example=15000.0)
-    demand_growth_pct: float = Field(..., example=8.5)
-    export_control_active: int = Field(0, example=1)
-    hhi: float = Field(..., example=0.45)
-    top_country_share_pct: float = Field(..., example=55.0)
+    mine_production_tonnes: Optional[float] = Field(50000.0, example=50000.0)
+    production_share_pct: Optional[float] = Field(40.0, example=40.0)
+    reserves_tonnes: Optional[float] = Field(1000000.0, example=1000000.0)
+    years_of_reserves: Optional[float] = Field(20.0, example=20.0)
+    refined_share_pct: Optional[float] = Field(65.0, example=65.0)
+    price_usd_per_tonne: Optional[float] = Field(15000.0, example=15000.0)
+    demand_growth_pct: Optional[float] = Field(8.5, example=8.5)
+    export_control_active: Optional[int] = Field(0, example=1)
+    hhi: Optional[float] = Field(0.45, example=0.45)
+    top_country_share_pct: Optional[float] = Field(55.0, example=55.0)
 
 class DriverFactor(BaseModel):
     feature: str

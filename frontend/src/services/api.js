@@ -8,7 +8,8 @@ async function fetchJSON(endpoint, options = {}) {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || `HTTP Error ${res.status}`);
+      const detailMsg = typeof err.detail === 'object' ? JSON.stringify(err.detail) : err.detail;
+      throw new Error(detailMsg || `HTTP Error ${res.status}`);
     }
     return await res.json();
   } catch (error) {
