@@ -17,17 +17,17 @@ export default function StackedCard({
     <div
       onClick={onClick}
       style={{ backgroundColor: bgColor, color: textColor }}
-      className={`physical-card physical-card-dashed-hover ${rotationClass} cursor-pointer p-7 md:p-9 border border-[#111111]/15 -mb-6 md:-mb-8 select-none z-10 transition-all`}
+      className={`physical-card physical-card-dashed-hover ${rotationClass} cursor-pointer p-8 md:p-10 md:px-14 border border-[#111111]/15 -mb-6 md:-mb-8 select-none z-10 transition-all`}
     >
       <div className="flex items-start justify-between">
         {/* Left Title & Subtitle */}
         <div>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl uppercase tracking-tight leading-[0.88] text-[#111111]">
+          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl uppercase tracking-tight leading-[0.88] text-[#111111]">
             {titleLine1}
             <br />
             {titleLine2}
           </h2>
-          <p className="text-[11px] font-mono uppercase font-bold tracking-wider mt-4 text-[#111111]/80">
+          <p className="text-xs font-mono uppercase font-bold tracking-wider mt-4 text-[#111111]/80">
             {subtitle}
           </p>
         </div>

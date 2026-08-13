@@ -25,7 +25,7 @@ export default function Home({ onNavigate }) {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 flex flex-col items-center">
+    <div className="w-full max-w-6xl mx-auto px-4 py-8 flex flex-col items-center">
       {/* Huge MINZERO Wordmark */}
       <div className="text-center w-full select-none">
         <h1 className="font-display text-[110px] sm:text-[160px] md:text-[220px] leading-[0.8] tracking-tighter text-[#111111] uppercase font-bold">
@@ -36,8 +36,8 @@ export default function Home({ onNavigate }) {
         </p>
       </div>
 
-      {/* Stacked Cards Deck */}
-      <div className="w-full max-w-3xl mt-12 md:mt-16 flex flex-col space-y-0">
+      {/* Stacked Cards Deck (Wide Landscape Horizontal Proportion) */}
+      <div className="w-full max-w-5xl md:max-w-6xl mt-10 md:mt-14 flex flex-col space-y-0 px-2">
         {/* CARD 01: Disruption Prediction */}
         <StackedCard
           bgColor="#FFFFFF"
