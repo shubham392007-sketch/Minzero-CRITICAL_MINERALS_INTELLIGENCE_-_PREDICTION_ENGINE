@@ -57,10 +57,17 @@ export default function Price({ onNavigate }) {
   };
 
   const handleChange = (field, val) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: typeof val === 'number' ? val : (field.includes('year') || field.includes('active') ? parseInt(val) || 0 : parseFloat(val) || 0)
-    }));
+    setFormData(prev => {
+      let parsedVal = val;
+      if (field === 'mineral' || field === 'country') {
+        parsedVal = String(val);
+      } else if (field === 'year' || field === 'export_control_active') {
+        parsedVal = parseInt(val, 10) || 0;
+      } else {
+        parsedVal = parseFloat(val) || 0;
+      }
+      return { ...prev, [field]: parsedVal };
+    });
   };
 
   return (
