@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import StackedCard from '../components/StackedCard';
 import RadarWidget from '../components/RadarWidget';
+import DeveloperSection from '../components/DeveloperSection';
 import { api } from '../services/api';
 
 export default function Home({ onNavigate }) {
@@ -103,6 +104,9 @@ export default function Home({ onNavigate }) {
           sparklineType="bars"
         />
       </div>
+
+      {/* Developer & Contact Section */}
+      <DeveloperSection />
     </div>
   );
 }
