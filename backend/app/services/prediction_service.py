@@ -39,6 +39,22 @@ class PredictionService:
 
         self.load_all_models()
 
+    def _normalize_country(self, country: str) -> str:
+        c_low = country.lower().strip()
+        alias_map = {
+            "congo (drc)": "drc",
+            "congo": "drc",
+            "democratic republic of congo": "drc",
+            "democratic republic of the congo": "drc",
+            "south africa": "southafrica",
+            "south korea": "southkorea",
+            "new caledonia": "newcaledonia",
+            "united states": "usa",
+            "united states of america": "usa",
+            "us": "usa"
+        }
+        return alias_map.get(c_low, c_low)
+
     def load_model_group(self, group: str):
         group_dir = self.base_dir / group
         model_path = group_dir / "model.pkl"
@@ -59,41 +75,59 @@ class PredictionService:
             self.load_model_group(group)
 
     def _prepare_features(self, payload: PredictionInputPayload, group: str) -> Tuple[pd.DataFrame, np.ndarray, List[str]]:
-        """Convert payload to engineered DataFrame matching training features."""
-        data_dict = payload.model_dump()
+        """Convert payload to engineered DataFrame matching training features using full historical series context."""
+        c_norm = self._normalize_country(payload.country)
+        m_norm = payload.mineral.lower().strip()
 
-        # Populate baseline dataset values if available and not explicitly overridden
+        # Match historical dataset rows
+        sub = pd.DataFrame()
         if self.master_df is not None and not self.master_df.empty:
-            match = self.master_df[
-                (self.master_df["mineral"].str.lower() == payload.mineral.lower()) &
-                (self.master_df["country"].str.lower() == payload.country.lower())
-            ]
-            if not match.empty:
-                year_match = match[match["year"] == payload.year]
-                base_row = year_match.iloc[0] if not year_match.empty else match.iloc[-1]
-                fields_set = payload.model_fields_set
-                for col, val in base_row.items():
-                    if col in data_dict and col not in fields_set:
-                        data_dict[col] = val
+            sub = self.master_df[
+                (self.master_df["mineral"].str.lower() == m_norm) &
+                (
+                    (self.master_df["country"].str.lower() == c_norm) |
+                    (self.master_df["country"].str.lower().str.contains(c_norm, regex=False))
+                )
+            ].copy()
+            if sub.empty:
+                sub = self.master_df[self.master_df["mineral"].str.lower() == m_norm].copy()
 
-        df_single = pd.DataFrame([data_dict])
+        data_dict = payload.model_dump()
+        data_dict["country"] = c_norm
 
-        # Engineer features
-        df_engineered = self.feature_engineer.transform(df_single)
+        if not sub.empty:
+            # Filter out payload year from historical series
+            sub_hist = sub[sub["year"] != payload.year].copy()
+            base_row = sub_hist.iloc[-1] if not sub_hist.empty else sub.iloc[-1]
+
+            # Populate non-overridden inputs from base_row
+            fields_set = payload.model_fields_set
+            for col, val in base_row.items():
+                if col in data_dict and col not in fields_set:
+                    data_dict[col] = val
+
+            series_df = pd.concat([sub_hist, pd.DataFrame([data_dict])], ignore_index=True)
+            series_df = series_df.sort_values("year")
+        else:
+            series_df = pd.DataFrame([data_dict])
+
+        # Transform full historical series to compute true temporal lag & rolling features
+        df_engineered = self.feature_engineer.transform(series_df)
+
+        # Extract target year row
+        target_row = df_engineered[df_engineered["year"] == payload.year]
+        if target_row.empty:
+            target_row = df_engineered.iloc[[-1]]
 
         meta = self.metadata.get(group, {})
         required_features = meta.get("features", [])
 
-        # Ensure all required feature columns exist
         for col in required_features:
-            if col not in df_engineered.columns:
-                df_engineered[col] = 0.0
+            if col not in target_row.columns:
+                target_row[col] = 0.0
 
-        X = df_engineered[required_features].fillna(0.0).copy()
-
-        # Clean inf values
-        num_cols = X.select_dtypes(include=[np.number]).columns
-        for c in num_cols:
+        X = target_row[required_features].fillna(0.0).copy()
+        for c in X.select_dtypes(include=[np.number]).columns:
             X[c] = X[c].replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
         scaler = self.scalers.get(group)
