@@ -16,6 +16,22 @@ class AnalyticsService:
         self.master_df, self.ref_df, self.dict_df = load_all_data()
         self.df = engineer_features(self.master_df)
 
+    def _normalize_country(self, country: str) -> str:
+        c_low = country.lower().strip()
+        alias_map = {
+            "congo (drc)": "drc",
+            "congo": "drc",
+            "democratic republic of congo": "drc",
+            "democratic republic of the congo": "drc",
+            "south africa": "southafrica",
+            "south korea": "southkorea",
+            "new caledonia": "newcaledonia",
+            "united states": "usa",
+            "united states of america": "usa",
+            "us": "usa"
+        }
+        return alias_map.get(c_low, c_low)
+
     def get_minerals_list(self) -> List[Dict[str, Any]]:
         """Return unique minerals list with metadata."""
         minerals = sorted(self.df["mineral"].unique().tolist())
@@ -56,19 +72,31 @@ class AnalyticsService:
 
     def get_dataset_row(self, mineral: str, country: str, year: int = 2025) -> Dict[str, Any]:
         """Return raw/engineered features for a specific mineral-country-year observation."""
+        c_norm = self._normalize_country(country)
+        m_norm = mineral.lower().strip()
+
+        # 1. Exact or normalized country match
         sub = self.df[
-            (self.df["mineral"].str.lower() == mineral.lower()) &
-            (self.df["country"].str.lower() == country.lower())
+            (self.df["mineral"].str.lower() == m_norm) &
+            (
+                (self.df["country"].str.lower() == c_norm) |
+                (self.df["country"].str.lower().str.contains(c_norm, regex=False))
+            )
         ]
+
+        # 2. Fallback to mineral average if specific country doesn't mine that mineral in dataset
         if sub.empty:
-            return {"error": f"No data found for {mineral} in {country}."}
-        
+            sub = self.df[self.df["mineral"].str.lower() == m_norm]
+
+        if sub.empty:
+            return {"error": f"No data found for mineral '{mineral}'."}
+
         y_sub = sub[sub["year"] == year]
         row = y_sub.iloc[0] if not y_sub.empty else sub.iloc[-1]
-        
+
         return {
             "mineral": row["mineral"],
-            "country": row["country"],
+            "country": country,
             "year": int(row["year"]),
             "mine_production_tonnes": round(float(row.get("mine_production_tonnes", 50000.0)), 1),
             "production_share_pct": round(float(row.get("production_share_pct", 40.0)), 1),
@@ -195,7 +223,11 @@ class AnalyticsService:
 
     def get_country_profile(self, country: str) -> Dict[str, Any]:
         """Return strategic intelligence profile for a specific country."""
-        c_df = self.df[self.df["country"].str.lower() == country.lower()].copy()
+        c_norm = self._normalize_country(country)
+        c_df = self.df[
+            (self.df["country"].str.lower() == c_norm) |
+            (self.df["country"].str.lower().str.contains(c_norm, regex=False))
+        ].copy()
         if c_df.empty:
             return {"error": f"Country '{country}' not found."}
 

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { RotateCcw, Play, CheckCircle, AlertCircle } from 'lucide-react';
+import { RotateCcw, Play } from 'lucide-react';
 
 export default function ModelInputForm({
   modelType = "disruption",
   initialValues = {},
   onSubmit,
-  loading = false,
-  minerals = ['Cobalt', 'Lithium', 'Antimony', 'Dysprosium', 'Gallium', 'Graphite', 'Nickel', 'Tungsten', 'Copper'],
-  countries = ['Congo (DRC)', 'China', 'Australia', 'Chile', 'Indonesia', 'South Africa', 'USA', 'Russia', 'Brazil']
+  loading = false
 }) {
+  const [mineralsList, setMineralsList] = useState(['Cobalt', 'Lithium', 'Antimony', 'Dysprosium', 'Gallium', 'Graphite', 'Nickel', 'Tungsten', 'Copper']);
+  const [countriesList, setCountriesList] = useState(['Congo (DRC)', 'China', 'Australia', 'Chile', 'Indonesia', 'South Africa', 'USA', 'Russia', 'Brazil']);
+
   const defaultState = {
     mineral: 'Cobalt',
     country: 'Congo (DRC)',
@@ -31,12 +32,33 @@ export default function ModelInputForm({
   const [formData, setFormData] = useState(defaultState);
   const [errors, setErrors] = useState({});
 
-  // Auto-fetch baseline row when mineral/country changes if useHistoricalData is true
+  // Fetch dynamic minerals & countries lists from API
+  useEffect(() => {
+    async function loadOptions() {
+      try {
+        const [mRes, cRes] = await Promise.all([
+          api.getMinerals().catch(() => null),
+          api.getCountries().catch(() => null)
+        ]);
+        if (mRes && Array.isArray(mRes)) {
+          setMineralsList(mRes.map(item => item.mineral));
+        }
+        if (cRes && Array.isArray(cRes)) {
+          setCountriesList(cRes.map(item => item.country));
+        }
+      } catch (e) {
+        console.log("Using baseline options");
+      }
+    }
+    loadOptions();
+  }, []);
+
+  // Auto-fetch baseline dataset row when mineral/country changes if useHistoricalData is true
   useEffect(() => {
     async function loadBaseline() {
       if (formData.useHistoricalData) {
         try {
-          const row = await api.getDatasetRow(formData.mineral, formData.country, formData.year);
+          const row = await api.getDatasetRow(formData.mineral, formData.country, formData.year).catch(() => null);
           if (row && !row.error) {
             setFormData(prev => ({
               ...prev,
@@ -53,7 +75,7 @@ export default function ModelInputForm({
             }));
           }
         } catch (e) {
-          console.log("No baseline dataset row found, preserving inputs");
+          // Silent fallback
         }
       }
     }
@@ -140,7 +162,7 @@ export default function ModelInputForm({
             onChange={(e) => handleChange('mineral', e.target.value)}
             className="w-full bg-[#EDECE7] border border-[#111111]/30 rounded-lg px-3 py-2 text-[#111111] font-bold"
           >
-            {minerals.map(m => (
+            {mineralsList.map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
           </select>
@@ -154,7 +176,7 @@ export default function ModelInputForm({
             onChange={(e) => handleChange('country', e.target.value)}
             className="w-full bg-[#EDECE7] border border-[#111111]/30 rounded-lg px-3 py-2 text-[#111111] font-bold"
           >
-            {countries.map(c => (
+            {countriesList.map(c => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
