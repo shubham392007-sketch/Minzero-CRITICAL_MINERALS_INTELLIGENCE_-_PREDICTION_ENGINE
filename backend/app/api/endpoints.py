@@ -57,6 +57,13 @@ def get_country_profile(country: str):
         raise HTTPException(status_code=404, detail=profile["error"])
     return profile
 
+@router.get("/dataset/row")
+def get_dataset_row(mineral: str, country: str, year: int = 2025):
+    row = analytics_service.get_dataset_row(mineral=mineral, country=country, year=year)
+    if "error" in row:
+        raise HTTPException(status_code=404, detail=row["error"])
+    return row
+
 # Prediction Endpoints
 @router.post("/predict/disruption", response_model=DisruptionPredictResponse)
 def predict_disruption(payload: PredictionInputPayload):

@@ -3,6 +3,7 @@ import StackedCard from '../components/StackedCard';
 import RadarWidget from '../components/RadarWidget';
 import DeveloperSection from '../components/DeveloperSection';
 import { api } from '../services/api';
+import { Cpu } from 'lucide-react';
 
 export default function Home({ onNavigate }) {
   const [overview, setOverview] = useState(null);
@@ -37,8 +38,19 @@ export default function Home({ onNavigate }) {
         </p>
       </div>
 
+      {/* RUN A MODEL Section Header */}
+      <div className="w-full max-w-5xl md:max-w-6xl mt-12 pt-6 border-t-2 border-[#111111] flex flex-col sm:flex-row sm:items-center justify-between gap-2 select-none px-2">
+        <div className="flex items-center space-x-2 font-mono text-xs font-bold uppercase tracking-widest text-[#111111]">
+          <Cpu className="w-4 h-4 text-[#FF2AA1]" />
+          <span>RUN A MODEL</span>
+        </div>
+        <span className="font-mono text-[11px] font-semibold text-[#111111]/60 uppercase tracking-tight">
+          SELECT AN ACTIONABLE ML MODULE TO RUN CUSTOM PREDICTIONS
+        </span>
+      </div>
+
       {/* Stacked Cards Deck (Wide Landscape Horizontal Proportion) */}
-      <div className="w-full max-w-5xl md:max-w-6xl mt-10 md:mt-14 flex flex-col space-y-0 px-2">
+      <div className="w-full max-w-5xl md:max-w-6xl mt-6 flex flex-col space-y-0 px-2">
         {/* CARD 01: Disruption Prediction */}
         <StackedCard
           bgColor="#FFFFFF"
@@ -47,7 +59,7 @@ export default function Home({ onNavigate }) {
           indexLabel="HIGH-RISK SUPPLY CHAINS"
           titleLine1="Disruption"
           titleLine2="Prediction"
-          subtitle="NEXT-YEAR SUPPLY DISRUPTION"
+          subtitle="PREDICT NEXT-YEAR DISRUPTION PROBABILITY"
           onClick={() => onNavigate('disruption')}
           sparklineType="line"
         />
@@ -60,7 +72,7 @@ export default function Home({ onNavigate }) {
           indexLabel="HIGH / CRITICAL SUPPLY CHAINS"
           titleLine1="Supply Risk"
           titleLine2="Intelligence"
-          subtitle="STRATEGIC VULNERABILITY"
+          subtitle="PREDICT ANALYTICAL SUPPLY-RISK SCORE"
           onClick={() => onNavigate('risk')}
           sparklineType="bars"
         />
@@ -73,7 +85,7 @@ export default function Home({ onNavigate }) {
           indexLabel="MINERALS ↑ > 10% NEXT YEAR"
           titleLine1="Mineral Price"
           titleLine2="Forecast"
-          subtitle="NEXT-YEAR PRICE OUTLOOK"
+          subtitle="FORECAST NEXT-YEAR MINERAL PRICE"
           onClick={() => onNavigate('price')}
           sparklineType="trend"
         />
@@ -86,7 +98,7 @@ export default function Home({ onNavigate }) {
           indexLabel="CRITICAL ANOMALIES"
           titleLine1="Supply Shock"
           titleLine2="Monitor"
-          subtitle="ANOMALY DETECTION"
+          subtitle="DETECT ABNORMAL SUPPLY-CHAIN BEHAVIOR"
           onClick={() => onNavigate('shocks')}
           widget={<RadarWidget />}
         />

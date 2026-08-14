@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from backend.app.preprocessing.data_loader import load_all_data
 from backend.app.preprocessing.feature_engineering import engineer_features
@@ -53,6 +53,36 @@ class AnalyticsService:
     def get_years_list(self) -> List[int]:
         """Return available years range."""
         return sorted(self.df["year"].unique().tolist())
+
+    def get_dataset_row(self, mineral: str, country: str, year: int = 2025) -> Dict[str, Any]:
+        """Return raw/engineered features for a specific mineral-country-year observation."""
+        sub = self.df[
+            (self.df["mineral"].str.lower() == mineral.lower()) &
+            (self.df["country"].str.lower() == country.lower())
+        ]
+        if sub.empty:
+            return {"error": f"No data found for {mineral} in {country}."}
+        
+        y_sub = sub[sub["year"] == year]
+        row = y_sub.iloc[0] if not y_sub.empty else sub.iloc[-1]
+        
+        return {
+            "mineral": row["mineral"],
+            "country": row["country"],
+            "year": int(row["year"]),
+            "mine_production_tonnes": round(float(row.get("mine_production_tonnes", 50000.0)), 1),
+            "production_share_pct": round(float(row.get("production_share_pct", 40.0)), 1),
+            "reserves_tonnes": round(float(row.get("reserves_tonnes", 1000000.0)), 1),
+            "years_of_reserves": round(float(row.get("years_of_reserves", 20.0)), 1),
+            "refined_share_pct": round(float(row.get("refined_share_pct", 65.0)), 1),
+            "price_usd_per_tonne": round(float(row.get("price_usd_per_tonne", 15000.0)), 2),
+            "demand_growth_pct": round(float(row.get("demand_growth_pct", 8.5)), 1),
+            "export_control_active": int(row.get("export_control_active", 0)),
+            "hhi": round(float(row.get("hhi", 0.45)), 4),
+            "top_country_share_pct": round(float(row.get("top_country_share_pct", 55.0)), 1),
+            "supply_risk_score": round(float(row.get("supply_risk_score", 50.0)), 1),
+            "disruption": int(row.get("disruption", 0))
+        }
 
     def get_overview(self) -> Dict[str, Any]:
         """Return high-level summary metrics for the main dashboard."""

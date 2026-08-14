@@ -17,7 +17,7 @@ export default function StackedCard({
     <div
       onClick={onClick}
       style={{ backgroundColor: bgColor, color: textColor }}
-      className={`physical-card physical-card-dashed-hover ${rotationClass} cursor-pointer p-8 md:p-10 md:px-14 border border-[#111111]/15 -mb-6 md:-mb-8 select-none z-10 transition-all`}
+      className={`physical-card group physical-card-dashed-hover ${rotationClass} cursor-pointer p-8 md:p-10 md:px-14 border border-[#111111]/15 -mb-6 md:-mb-8 select-none z-10 transition-all`}
     >
       <div className="flex items-start justify-between">
         {/* Left Title & Subtitle */}
@@ -27,9 +27,10 @@ export default function StackedCard({
             <br />
             {titleLine2}
           </h2>
-          <p className="text-xs font-mono uppercase font-bold tracking-wider mt-4 text-[#111111]/80">
-            {subtitle}
-          </p>
+          <div className="flex items-center space-x-2 mt-4 text-xs font-mono font-bold uppercase tracking-wider text-[#111111]/80">
+            <span>{subtitle}</span>
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[#FF2AA1] font-extrabold">· RUN MODEL →</span>
+          </div>
         </div>
 
         {/* Right Index Number & Sparkline / Widget */}

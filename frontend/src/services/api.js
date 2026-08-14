@@ -29,6 +29,7 @@ export const api = {
   getPrices: () => fetchJSON('/analytics/prices'),
   getMineralProfile: (mineral) => fetchJSON(`/mineral/${encodeURIComponent(mineral)}`),
   getCountryProfile: (country) => fetchJSON(`/country/${encodeURIComponent(country)}`),
+  getDatasetRow: (mineral, country, year = 2025) => fetchJSON(`/dataset/row?mineral=${encodeURIComponent(mineral)}&country=${encodeURIComponent(country)}&year=${year}`),
   getModelMetrics: () => fetchJSON('/model/metrics'),
   getModelFeatures: () => fetchJSON('/model/features'),
 
