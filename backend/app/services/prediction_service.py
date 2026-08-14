@@ -120,7 +120,7 @@ class PredictionService:
         elif prob >= 0.25:
             risk_level = "ELEVATED"
         else:
-            risk_level = "LOW"
+            risk_level = "LOW RISK"
 
         meta = self.metadata.get("disruption", {})
         top_importances = meta.get("feature_importances", [])

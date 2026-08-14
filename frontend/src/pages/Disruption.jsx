@@ -4,7 +4,7 @@ import ModelInputForm from '../components/ModelInputForm';
 import EditorialLoader from '../components/EditorialLoader';
 import ModelTransparency from '../components/ModelTransparency';
 import RecentPredictions from '../components/RecentPredictions';
-import { ArrowLeft, RefreshCw, Layers, ExternalLink, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ExternalLink, AlertTriangle, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export default function Disruption({ onNavigate }) {
   const [loading, setLoading] = useState(false);
@@ -37,6 +37,8 @@ export default function Disruption({ onNavigate }) {
       setLoading(false);
     }
   };
+
+  const isLowRisk = prediction && (prediction.disruption_probability < 0.25 || prediction.predicted_disruption === 0);
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-4 space-y-6 select-none">
@@ -88,28 +90,39 @@ export default function Disruption({ onNavigate }) {
             {/* Left Result Card: Probability & Risk Level (White) */}
             <div className="md:col-span-6 physical-card p-8 bg-white border border-[#111111]/20 flex flex-col justify-between space-y-6">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111]/60 block">
-                  DISRUPTION PROBABILITY
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#111111]/60 block">
+                    DISRUPTION PROBABILITY
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-[#111111]/50 uppercase">
+                    {prediction.mineral} • {prediction.country} ({prediction.year})
+                  </span>
+                </div>
                 
                 {/* Real Model Probability Output */}
                 <div className="font-mono text-6xl sm:text-7xl font-bold tracking-tighter text-[#111111] mt-2">
                   {prediction.disruption_probability_pct}
                 </div>
 
-                <div className="mt-3">
-                  <span className={`px-3 py-1 rounded text-xs font-mono font-bold uppercase ${
-                    prediction.risk_level.includes('CRITICAL') ? 'badge-editorial-critical' :
-                    prediction.risk_level.includes('HIGH') ? 'badge-editorial-high' :
-                    prediction.risk_level.includes('ELEVATED') ? 'badge-editorial-elevated' : 'badge-editorial-low'
+                <div className="mt-3 flex items-center space-x-2">
+                  <span className={`px-3 py-1 rounded text-xs font-mono font-bold uppercase border ${
+                    prediction.risk_level.includes('CRITICAL') ? 'bg-red-100 text-red-800 border-red-300' :
+                    prediction.risk_level.includes('HIGH') ? 'bg-orange-100 text-orange-800 border-orange-300' :
+                    prediction.risk_level.includes('ELEVATED') ? 'bg-yellow-100 text-yellow-800 border-yellow-300' :
+                    'bg-green-100 text-green-800 border-green-300'
                   }`}>
                     {prediction.risk_level}
                   </span>
                 </div>
 
-                <p className="text-xs font-mono font-semibold text-[#111111]/70 mt-4">
-                  PREDICTION: <span className="font-bold text-[#111111] uppercase">{prediction.predicted_disruption === 1 ? 'LIKELY DISRUPTION' : 'NO DISRUPTION'}</span>
-                </p>
+                <div className="mt-4 flex items-center space-x-2 text-xs font-mono font-semibold">
+                  {prediction.predicted_disruption === 1 ? (
+                    <ShieldAlert className="w-4 h-4 text-red-600" />
+                  ) : (
+                    <ShieldCheck className="w-4 h-4 text-green-600" />
+                  )}
+                  <span>PREDICTION: <strong className="uppercase">{prediction.predicted_disruption === 1 ? 'LIKELY DISRUPTION' : 'NO DISRUPTION'}</strong></span>
+                </div>
               </div>
 
               {/* Large Probability Visualization Meter */}
@@ -119,10 +132,10 @@ export default function Disruption({ onNavigate }) {
                   <span>50%</span>
                   <span>100%</span>
                 </div>
-                <div className="relative w-full bg-[#EDECE7] h-3 rounded-full overflow-hidden border border-[#111111]/20">
+                <div className="relative w-full bg-[#EDECE7] h-4 rounded-full overflow-hidden border border-[#111111]/20">
                   <div
-                    className="bg-[#FF2AA1] h-full transition-all duration-700"
-                    style={{ width: `${Math.min(prediction.disruption_probability * 100, 100)}%` }}
+                    className={`h-full transition-all duration-700 ${isLowRisk ? 'bg-green-500' : 'bg-[#FF2AA1]'}`}
+                    style={{ width: `${Math.max(prediction.disruption_probability * 100, 4)}%` }}
                   />
                 </div>
               </div>
@@ -147,12 +160,25 @@ export default function Disruption({ onNavigate }) {
                 {/* Real Model Contributing Features */}
                 <div className="space-y-2.5 text-xs font-mono font-semibold text-[#111111]">
                   {prediction.top_contributing_features && prediction.top_contributing_features.length > 0 ? (
-                    prediction.top_contributing_features.map((f, i) => (
-                      <div key={i} className="flex justify-between items-center bg-white/70 p-2.5 rounded-lg border border-[#111111]/10">
-                        <span className="uppercase">{f.feature.replace(/_/g, ' ')}</span>
-                        <span className="font-bold">{f.score >= 0 ? `+${f.score.toFixed(2)}` : f.score.toFixed(2)}</span>
-                      </div>
-                    ))
+                    prediction.top_contributing_features.map((f, i) => {
+                      const displayScore = isLowRisk
+                        ? `${(f.score * 100).toFixed(0)}% WEIGHT`
+                        : `${f.score >= 0 ? '+' : ''}${f.score.toFixed(2)}`;
+
+                      const impactLabel = isLowRisk
+                        ? "STABILIZING FACTOR"
+                        : f.impact ? f.impact.toUpperCase() : "RISK DRIVER";
+
+                      return (
+                        <div key={i} className="flex justify-between items-center bg-white/80 p-3 rounded-lg border border-[#111111]/10">
+                          <div>
+                            <span className="uppercase block font-bold">{f.feature.replace(/_/g, ' ')}</span>
+                            <span className="text-[9px] text-[#111111]/60 block font-semibold">{impactLabel}</span>
+                          </div>
+                          <span className="font-bold text-[#111111] bg-[#EDECE7] px-2 py-1 rounded text-[11px]">{displayScore}</span>
+                        </div>
+                      );
+                    })
                   ) : (
                     <div className="bg-white/70 p-3 rounded-lg text-center opacity-70">
                       Feature importances computed from XGBoost model
