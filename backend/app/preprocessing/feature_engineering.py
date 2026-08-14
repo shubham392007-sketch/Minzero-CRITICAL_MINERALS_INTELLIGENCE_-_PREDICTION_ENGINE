@@ -45,10 +45,24 @@ class FeatureEngineer:
         """Create temporal lag and rolling features grouped by (mineral, country)."""
         df = df.copy()
 
-        # Sort chronologically by mineral, country, and year
-        df = df.sort_values(by=["mineral", "country", "year"]).reset_index(drop=True)
+        # Use normalized lower-case keys for robust grouping across case differences
+        df["_m_group"] = df["mineral"].astype(str).str.lower().str.strip()
+        df["_c_group"] = df["country"].astype(str).str.lower().str.strip()
 
-        group_cols = ["mineral", "country"]
+        alias_map = {
+            "congo (drc)": "drc",
+            "congo": "drc",
+            "south africa": "southafrica",
+            "south korea": "southkorea",
+            "new caledonia": "newcaledonia",
+            "united states": "usa"
+        }
+        df["_c_group"] = df["_c_group"].map(lambda c: alias_map.get(c, c))
+
+        # Sort chronologically by mineral group, country group, and year
+        df = df.sort_values(by=["_m_group", "_c_group", "year"]).reset_index(drop=True)
+
+        group_cols = ["_m_group", "_c_group"]
 
         # 1. Year-over-year raw changes and percentage changes
         df["year_over_year_production_change"] = df.groupby(group_cols)["mine_production_tonnes"].diff()
@@ -113,6 +127,9 @@ class FeatureEngineer:
         for col in fill_cols:
             if col in df.columns:
                 df[col] = df.groupby(group_cols)[col].bfill().ffill().fillna(0)
+
+        # Drop temporary grouping columns
+        df = df.drop(columns=["_m_group", "_c_group"], errors="ignore")
 
         # Replace any residual inf/-inf and NaN with 0.0 across all numerical columns
         num_cols = df.select_dtypes(include=[np.number]).columns
